@@ -5,7 +5,6 @@
 <title>Chemistry Substance-Identifier</title>
 <style>
     body{font-family:Arial,Helvetica,sans-serif;margin:1.5rem 2rem;line-height:1.35}
-    h1,h2{margin-top:0}
     pre{background:#f7f7f7;border:1px solid #ccc;padding:1rem;overflow-x:auto}
     .card{border:1px solid #999;border-radius:6px;padding:1rem;margin-top:2rem}
     .btn{display:inline-block;margin:0.3rem 0.3rem 0;padding:0.45rem 0.9rem;
@@ -19,7 +18,7 @@
 <h1>Chemistry Substance Identifier</h1>
 
 <h2>Flow-chart (plain text)</h2>
-<pre id="flowchart">
+<pre>
 START
 │
 ├── Lugol’s iodine turns blue-black? ──► YES →  Cornstarch
@@ -49,7 +48,7 @@ START
             │
             ├── Add NaOH
             │   │
-            │   ├── White ppt + orange-red flame earlier →  Calcium nitrate
+            │   ├── White ppt & orange-red flame earlier →  Calcium nitrate
             │   ├── White ppt but no flame color →  Magnesium sulfate
             │   ├── Pungent NH₃ smell / vapor →  Ammonium chloride
             │   └── No precipitate  → continue
@@ -74,72 +73,113 @@ START
 </div>
 
 <script>
-//--- decision-tree object -----------------------------------------
-const tree={
-  q:"Does Lugol’s iodine test turn blue-black?",
-  o:[{l:"Yes",r:"Cornstarch"},
-     {l:"No",n:{
-       q:"Is the substance insoluble in water (cloudy or settles)?",
-       o:[{l:"Yes",n:{
-             q:"Does it effervesce when dilute HCl is added?",
-             o:[{l:"Yes",r:"Calcium carbonate"},
-                {l:"No",r:"Calcium sulfate"}]}},
-          {l:"No",n:{
-             q:"What flame-test color do you observe?",
-             o:[{l:"Scarlet-red",r:"Lithium chloride"},
-                {l:"Lilac / purple",r:"Potassium chloride"},
-                {l:"Pale green",r:"Boric acid"},
-                {l:"Orange / yellow or none",n:{
-                   q:"Does Benedict’s test give an orange-brown precipitate?",
-                   o:[{l:"Yes",n:{
-                         q:"What is the approximate solution pH?",
-                         o:[{l:"Acidic (~5)",r:"Glucose"},
-                            {l:"Neutral (~7)",r:"Sucrose"}]}},
-                      {l:"No",n:{
-                         q:"After adding NaOH, what happens?",
-                         o:[{l:"White ppt & orange-red flame earlier",r:"Calcium nitrate"},
-                            {l:"White ppt but no flame color",r:"Magnesium sulfate"},
-                            {l:"Pungent ammonia smell / vapor",r:"Ammonium chloride"},
-                            {l:"No precipitate",n:{
-                               q:"After adding dilute HCl, what happens?",
-                               o:[{l:"Vigorous fizz + beaker warms",r:"Sodium carbonate"},
-                                  {l:"Moderate fizz, little temp change",r:"Sodium bicarbonate"},
-                                  {l:"No fizz",n:{
-                                     q:"When the solid dissolves, do you feel noticeable cooling?",
-                                     o:[{l:"Yes",r:"Sodium acetate"},
-                                        {l:"No",r:"Sodium chloride"}]}}]}}]}}]}}]}}]};
-//------------------------------------------------------------------
+// -------- Decision tree --------------------------------------------------
+var tree = {
+  q: "Does Lugol’s iodine test turn blue-black?",
+  o: [
+    { l: "Yes", r: "Cornstarch" },
+    { l: "No", n: {
+        q: "Is the substance insoluble in water (cloudy or settles)?",
+        o: [
+          { l: "Yes", n: {
+              q: "Does it effervesce when dilute HCl is added?",
+              o: [
+                { l: "Yes", r: "Calcium carbonate" },
+                { l: "No",  r: "Calcium sulfate" }
+              ]
+          }},
+          { l: "No", n: {
+              q: "What flame-test color do you observe?",
+              o: [
+                { l: "Scarlet-red", r: "Lithium chloride" },
+                { l: "Lilac / purple", r: "Potassium chloride" },
+                { l: "Pale green",    r: "Boric acid" },
+                { l: "Orange / yellow or none", n: {
+                    q: "Does Benedict’s test give an orange-brown precipitate?",
+                    o: [
+                      { l: "Yes", n: {
+                          q: "What is the approximate solution pH?",
+                          o: [
+                            { l: "Acidic (~5)",  r: "Glucose" },
+                            { l: "Neutral (~7)", r: "Sucrose" }
+                          ]
+                      }},
+                      { l: "No", n: {
+                          q: "After adding NaOH, what happens?",
+                          o: [
+                            { l: "White ppt & orange-red flame earlier", r: "Calcium nitrate" },
+                            { l: "White ppt but no flame color",         r: "Magnesium sulfate" },
+                            { l: "Pungent ammonia smell / vapor",        r: "Ammonium chloride" },
+                            { l: "No precipitate", n: {
+                                q: "After adding dilute HCl, what happens?",
+                                o: [
+                                  { l: "Vigorous fizz + beaker warms",        r: "Sodium carbonate" },
+                                  { l: "Moderate fizz, little temperature change", r: "Sodium bicarbonate" },
+                                  { l: "No fizz", n: {
+                                      q: "When the solid dissolves, do you feel noticeable cooling?",
+                                      o: [
+                                        { l: "Yes", r: "Sodium acetate" },
+                                        { l: "No",  r: "Sodium chloride" }
+                                      ]
+                                  }}
+                                ]
+                            }}
+                          ]
+                      }}
+                    ]
+                }}
+              ]
+          }}
+        ]
+    }}
+  ]
+};
+// ------------------------------------------------------------------------
 
-const promptEl=document.getElementById("prompt"),
-      btnsEl=document.getElementById("buttons"),
-      resEl=document.getElementById("result");
+var promptEl = document.getElementById("prompt");
+var buttonsEl = document.getElementById("buttons");
+var resultEl  = document.getElementById("result");
 
-let node=tree;
+var node = tree;                // current position in the tree
 
-function render(){
-  promptEl.textContent=node.q||"";
-  btnsEl.innerHTML="";                           // clear old buttons
-  (node.o||[]).forEach(opt=>{
-    const b=document.createElement("button");
-    b.className="btn"; b.textContent=opt.l;
-    b.onclick=()=>select(opt);
-    btnsEl.appendChild(b);
-  });
+function showNode() {
+  promptEl.textContent = node.q || "";
+  buttonsEl.innerHTML = "";
+  var opts = node.o || [];
+  for (var i = 0; i < opts.length; i++) {
+    (function(opt){
+      var b = document.createElement("button");
+      b.className = "btn";
+      b.textContent = opt.l;
+      b.onclick = function(){ choose(opt); };
+      buttonsEl.appendChild(b);
+    })(opts[i]);
+  }
 }
 
-function select(opt){
-  if(opt.r){                                 // reached a result leaf
-    promptEl.textContent="Identified substance:";
-    btnsEl.innerHTML="";
-    resEl.textContent=opt.r;
-    const restart=document.createElement("button");
-    restart.className="btn"; restart.textContent="Start Over";
-    restart.onclick=()=>{node=tree;resEl.textContent="";render();};
-    btnsEl.appendChild(restart);
-  }else if(opt.n){ node=opt.n; render(); }
+function choose(opt) {
+  if (opt.r) {                // reached a result leaf
+    promptEl.textContent = "Identified substance:";
+    buttonsEl.innerHTML = "";
+    resultEl.textContent = opt.r;
+
+    var restart = document.createElement("button");
+    restart.className = "btn";
+    restart.textContent = "Start Over";
+    restart.onclick = function(){
+      node = tree;
+      resultEl.textContent = "";
+      showNode();
+    };
+    buttonsEl.appendChild(restart);
+
+  } else if (opt.n) {         // go to next question
+    node = opt.n;
+    showNode();
+  }
 }
 
-render();                                     // initialize on load
+showNode();                    // initialise when the page loads
 </script>
 
 </body>
