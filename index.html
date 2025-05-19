@@ -2,158 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Chemistry Unknown-Identification Flow-Chart</title>
-
-  <!-- tiny drawing libraries (≈ 90 kB total, cached by every CDN) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"
-          integrity="sha512-CJ8CX9jvN6YaWJydSDU9mYB2veJTOLtPzd0R5/vlJyy9/x1zYWpoGz9i0XE9Qc7ptuz1xCFM/0vqllqlkiPgIQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.16.3/flowchart.min.js"
-          integrity="sha512-DRiXmu6WCSVjDkAzp/dIjVtiIvzgrLhmpB4Fs3IALnF5RzQ2bw36aQt0WPRMmK8LUMtDSc288LiHL6i8gK05jQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <title>Chem Lab – Unknown Substance Flow Chart</title>
   <style>
-    body{
-      font-family: system-ui, sans-serif;
-      margin:0;
-      background:#fafafa;
-      color:#222;
-    }
-    header{
-      padding:1rem 2rem;
-      background:#004b91;
-      color:#fff;
-    }
-    h1{margin:0;font-size:1.4rem}
-    main{
+    body{font-family:system-ui, sans-serif;margin:0;background:#fff;color:#000}
+    header{background:#004b91;color:#fff;padding:0.8rem 1.2rem}
+    h1{margin:0;font-size:1.2rem}
+    pre{
+      font-family: "Courier New", Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.35;
       padding:1rem;
-      overflow-x:auto;          /* lets you scroll wide diagrams */
+      overflow-x:auto;
+      white-space:pre;
     }
-    /* neat border around the SVG canvas */
-    #canvas svg{border:1px solid #ccc}
+    /* thin gray frame so it stands out */
+    .frame{border:1px solid #ccc;margin:1rem}
   </style>
 </head>
-
 <body>
-  <header><h1>Unknown Substance Identification – Decision Tree</h1></header>
-  <main>
-    <div id="canvas"></div>
-  </main>
+<header><h1>Unknown-Identification Decision Tree</h1></header>
 
-  <script>
-/* -------- flowchart description ------------------------- */
-const chart = `
-st=>start: START
-c1=>condition: Water soluble?
-op1=>operation: Add 1 M HCl
-c2=>condition: CO₂ bubbles?
-s1=>operation: **CaCO₃**
+<div class="frame">
+<pre>
+START
+│
+├─► 1. Water-solubility test?
+│     │
+│     ├─ NO (insoluble) ──► 2
+│     │                     │
+│     │                     ├─ CO₂ bubbles with 1 M HCl?  YES ──► CaCO₃
+│     │                     └─ NO ──► Lugol’s iodine blue-black?
+│     │                                   ├─ YES ──► Starch
+│     │                                   └─ NO  ──► CaSO₄
+│     │
+│     └─ YES (soluble) ──► 3. pH of solution
+│                           │
+│                           ├─ pH > 9  (strongly basic) ──► 4
+│                           │                               │
+│                           │                               ├─ Vigorous fizz with 1 M HCl?
+│                           │                               │       ├─ YES ──► Na₂CO₃
+│                           │                               │       └─ NO  ──► NaHCO₃
+│                           │
+│                           ├─ pH < 7  (acidic) ──► 5
+│                           │                     │
+│                           │                     ├─ White ppt with 1 M NaOH?  YES ──► Ca(NO₃)₂
+│                           │                     ├─ NH₃ odor with NaOH?       YES ──► NH₄Cl
+│                           │                     └─ Neither ──► Benedict’s red ppt?
+│                           │                                       ├─ YES ──► Glucose
+│                           │                                       └─ NO  ──► Green flame test?
+│                           │                                                   ├─ YES ──► H₃BO₃
+│                           │                                                   └─ —
+│                           │
+│                           └─ 7 ≤ pH ≤ 9  (neutral / slightly basic) ──► 6
+│                                                     │
+│                                                     ├─ Crimson flame?  YES ──► LiCl
+│                                                     ├─ Violet flame?   YES ──► KCl
+│                                                     └─ Other/none ──► White ppt with NaOH?
+│                                                                     │       ├─ YES ──► MgSO₄
+│                                                                     │       └─ NO ──► Vinegar odor with conc. HCl?
+│                                                                     │                   ├─ YES ──► NaC₂H₃O₂
+│                                                                     │                   └─ NO  ──► NaCl
+</pre>
+</div>
 
-op2=>operation: Lugol's iodine
-c3=>condition: Blue-black?
-s2=>operation: **Starch**
-s3=>operation: **CaSO₄**
-
-op3=>operation: pH test
-c4=>condition: pH &gt; 9?
-op4=>operation: Add HCl
-c5=>condition: Vigorous fizz?
-s4=>operation: **Na₂CO₃**
-s5=>operation: **NaHCO₃**
-
-c6=>condition: pH &lt; 7?
-op5=>operation: Add NaOH
-c7=>condition: White ppt?
-s6=>operation: **Ca(NO₃)₂**
-c8=>condition: NH₃ odor?
-s7=>operation: **NH₄Cl**
-
-op6=>operation: Benedict's test
-c9=>condition: Red ppt?
-s8=>operation: **Glucose**
-
-op7=>operation: Flame test (green)
-c10=>condition: Green flame?
-s9=>operation: **H₃BO₃**
-
-op8=>operation: Flame test (crimson/violet)
-c11=>condition: Crimson?
-s10=>operation: **LiCl**
-c12=>condition: Violet?
-s11=>operation: **KCl**
-
-op9=>operation: Add NaOH
-c13=>condition: White ppt?
-s12=>operation: **MgSO₄**
-
-op10=>operation: Add conc. HCl
-c14=>condition: Vinegar odor?
-s13=>operation: **NaC₂H₃O₂**
-s14=>operation: **NaCl**
-
-/* -------- connections -------- */
-st->c1
-c1(yes,right)->op3
-c1(no,left)->op1
-
-op1->c2
-c2(yes,down)->s1
-c2(no,right)->op2
-
-op2->c3
-c3(yes,down)->s2
-c3(no,right)->s3
-
-op3->c4
-c4(yes,down)->op4
-c4(no,right)->c6
-
-op4->c5
-c5(yes,down)->s4
-c5(no,right)->s5
-
-c6(yes,down)->op5
-c6(no,right)->op8          /* neutral / slightly basic path */
-
-op5->c7
-c7(yes,down)->s6
-c7(no,right)->c8
-c8(yes,down)->s7
-c8(no,right)->op6
-
-op6->c9
-c9(yes,down)->s8
-c9(no,right)->op7
-
-op7->c10
-c10(yes,down)->s9
-c10(no,right)->op8
-
-op8->c11
-c11(yes,down)->s10
-c11(no,right)->c12
-c12(yes,down)->s11
-c12(no,right)->op9
-
-op9->c13
-c13(yes,down)->s12
-c13(no,right)->op10
-
-op10->c14
-c14(yes,down)->s13
-c14(no,right)->s14
-`;
-
-/* -------- render the diagram ---------------------------- */
-const diagram = flowchart.parse(chart);
-diagram.drawSVG('canvas', {
-  'line-width' : 1,
-  'maxWidth'   : 0,      // unlimited → auto-shrink to content
-  'line-length': 40,
-  'font-size'  : 12,
-  'font-family': 'system-ui, sans-serif',
-  'arrow-end'  : 'block'
-});
-  </script>
 </body>
 </html>
