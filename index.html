@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Chemistry Unknown-Identification Flow Chart</title>
+
+  <!-- Mermaid renders the diagram -->
+  <script type="module"
+          src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"></script>
+
+  <style>
+    body{
+      font-family: system-ui, sans-serif;
+      margin:0;
+      background:#fafafa;
+      color:#222;
+    }
+    header{
+      padding:1rem 2rem;
+      background:#004b91;
+      color:#fff;
+    }
+    h1{margin:0;font-size:1.5rem}
+    main{
+      padding:2rem;
+      overflow-x:auto;   /* lets you scroll if diagram is wide */
+    }
+    /* optional: dark borders around nodes */
+    .mermaid rect,
+    .mermaid polygon,
+    .mermaid path{
+      stroke:#333;
+      stroke-width:1px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Unknown Substance Identification – Lab Flow Chart</h1>
+  </header>
+
+  <main>
+    <!-- ▶▶ Mermaid code begins ◀◀ -->
+    <div class="mermaid">
+flowchart TD
+  Start((START))
+  Start --> Solub{Water&nbsp;soluble?}
+
+  %% ───────── Insoluble branch ─────────
+  Solub -- No --> Step2[Add 1 M HCl<br/>CO₂ bubbles?]
+  Step2 -- Yes --> CaCO3[CaCO₃]
+  Step2 -- No --> Step3[Lugol’s iodine<br/>Blue-black?]
+  Step3 -- Yes --> Starch[Starch]
+  Step3 -- No --> CaSO4[CaSO₄]
+
+  %% ───────── Soluble branch ─────────
+  Solub -- Yes --> Step4[pH test]
+
+  %% strongly basic
+  Step4 -->|pH &gt; 9| Step5[Add HCl<br/>Vigorous fizz?]
+  Step5 -- Yes --> Na2CO3[Na₂CO₃]
+  Step5 -- No --> NaHCO3[NaHCO₃]
+
+  %% acidic
+  Step4 -->|pH &lt; 7| Step7[Add NaOH<br/>ppt / odor?]
+  Step7 -->|White ppt| CaNO3[Ca(NO₃)₂]
+  Step7 -->|NH₃ odor| NH4Cl[NH₄Cl]
+  Step7 -->|None| Step8[Benedict’s test<br/>Red ppt?]
+  Step8 -- Yes --> Glucose[Glucose]
+  Step8 -- No --> Step9[Flame test<br/>Green flame?]
+  Step9 -- Yes --> H3BO3[H₃BO₃]
+
+  %% neutral / slightly basic
+  Step4 -->|7 ≤ pH ≤ 9| Step10[Flame test]
+  Step10 -->|Crimson| LiCl[LiCl]
+  Step10 -->|Violet| KCl[KCl]
+  Step10 -->|Other/none| Step11[Add NaOH<br/>White ppt?]
+  Step11 -- Yes --> MgSO4[MgSO₄]
+  Step11 -- No --> Step12[Add conc.&nbsp;HCl<br/>Vinegar odor?]
+  Step12 -- Yes --> NaAc[NaC₂H₃O₂]
+  Step12 -- No --> NaCl[NaCl]
+    </div>
+    <!-- ▶▶ Mermaid code ends ◀◀ -->
+  </main>
+</body>
+</html>
