@@ -1,69 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Chem Lab – Unknown Substance Flow Chart</title>
-  <style>
-    body{font-family:system-ui, sans-serif;margin:0;background:#fff;color:#000}
-    header{background:#004b91;color:#fff;padding:0.8rem 1.2rem}
-    h1{margin:0;font-size:1.2rem}
-    pre{
-      font-family: "Courier New", Consolas, monospace;
-      font-size: 14px;
-      line-height: 1.35;
-      padding:1rem;
-      overflow-x:auto;
-      white-space:pre;
-    }
-    /* thin gray frame so it stands out */
-    .frame{border:1px solid #ccc;margin:1rem}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chem Lab – Unknown-ID Flow Chart</title>
+<style>
+  body{margin:0;font-family:system-ui, sans-serif;background:#fff;color:#000}
+  header{background:#004b91;color:#fff;padding:.8rem 1rem}
+  h1{margin:0;font-size:1.1rem}
+  /* scrolling frame */
+  pre{
+    font-family:"Courier New",Consolas,monospace;
+    font-size:14px;          /* adjust if you need larger text */
+    line-height:1.35;
+    margin:0;                /* no extra margin */
+    padding:1rem;
+    white-space:pre;         /* keep alignment */
+    overflow:auto;           /* scroll if too wide or tall */
+    border-top:1px solid #ccc;
+  }
+</style>
 </head>
 <body>
-<header><h1>Unknown-Identification Decision Tree</h1></header>
+<header><h1>Unknown Substance Identification – Decision Tree</h1></header>
 
-<div class="frame">
 <pre>
 START
-│
-├─► 1. Water-solubility test?
-│     │
-│     ├─ NO (insoluble) ──► 2
-│     │                     │
-│     │                     ├─ CO₂ bubbles with 1 M HCl?  YES ──► CaCO₃
-│     │                     └─ NO ──► Lugol’s iodine blue-black?
-│     │                                   ├─ YES ──► Starch
-│     │                                   └─ NO  ──► CaSO₄
-│     │
-│     └─ YES (soluble) ──► 3. pH of solution
-│                           │
-│                           ├─ pH > 9  (strongly basic) ──► 4
-│                           │                               │
-│                           │                               ├─ Vigorous fizz with 1 M HCl?
-│                           │                               │       ├─ YES ──► Na₂CO₃
-│                           │                               │       └─ NO  ──► NaHCO₃
-│                           │
-│                           ├─ pH < 7  (acidic) ──► 5
-│                           │                     │
-│                           │                     ├─ White ppt with 1 M NaOH?  YES ──► Ca(NO₃)₂
-│                           │                     ├─ NH₃ odor with NaOH?       YES ──► NH₄Cl
-│                           │                     └─ Neither ──► Benedict’s red ppt?
-│                           │                                       ├─ YES ──► Glucose
-│                           │                                       └─ NO  ──► Green flame test?
-│                           │                                                   ├─ YES ──► H₃BO₃
-│                           │                                                   └─ —
-│                           │
-│                           └─ 7 ≤ pH ≤ 9  (neutral / slightly basic) ──► 6
-│                                                     │
-│                                                     ├─ Crimson flame?  YES ──► LiCl
-│                                                     ├─ Violet flame?   YES ──► KCl
-│                                                     └─ Other/none ──► White ppt with NaOH?
-│                                                                     │       ├─ YES ──► MgSO₄
-│                                                                     │       └─ NO ──► Vinegar odor with conc. HCl?
-│                                                                     │                   ├─ YES ──► NaC₂H₃O₂
-│                                                                     │                   └─ NO  ──► NaCl
+ |
+ +- Water soluble?
+    |
+    +-- NO  →  Insoluble branch
+    |         +-- HCl bubbles?  → YES ⇒ CaCO₃
+    |         |                  NO  → Lugol blue-black? → YES ⇒ Starch
+    |         |                                         NO  ⇒ CaSO₄
+    |
+    +-- YES →  Soluble branch
+               +-- pH > 9 ?
+               |     +-- Add HCl bubbles? → YES ⇒ Na₂CO₃
+               |                          NO  ⇒ NaHCO₃
+               |
+               +-- pH < 7 ?
+               |     +-- NaOH white ppt? → YES ⇒ Ca(NO₃)₂
+               |     |   NH₃ odor?       → YES ⇒ NH₄Cl
+               |     |   Neither (no ppt / odor):
+               |     |     +-- Benedict red ppt? → YES ⇒ Glucose
+               |     |                           NO  → Flame green? → YES ⇒ H₃BO₃
+               |
+               +-- 7 ≤ pH ≤ 9
+                     +-- Flame crimson? → LiCl
+                     +-- Flame violet?  → KCl
+                     +-- Other / none:
+                           +-- NaOH white ppt? → YES ⇒ MgSO₄
+                           |                   NO  → conc. HCl vinegar odor?
+                           |                                 YES ⇒ NaC₂H₃O₂
+                           |                                 NO  ⇒ NaCl
 </pre>
-</div>
 
 </body>
 </html>
