@@ -2,53 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Vedant & Zeno Chemistry Substance Identifier</title>
+<title>Chemistry Substance Identifier</title>
 <style>
  body{font-family:Arial,Helvetica,sans-serif;margin:1.5rem 2rem;line-height:1.35}
  pre{background:#f7f7f7;border:1px solid #ccc;padding:1rem;overflow-x:auto}
  .card{border:1px solid #999;border-radius:6px;padding:1rem;margin-top:2rem}
- .btn{display:inline-block;margin:0.3rem 0.3rem 0;
-      padding:0.45rem 0.9rem;border:1px solid #555;border-radius:4px;
-      background:#e5e5e5;cursor:pointer}
+ .btn{display:inline-block;margin:0.35rem 0;padding:0.45rem 0.9rem;
+      border:1px solid #555;border-radius:4px;background:#e6e6e6;cursor:pointer}
  .btn:hover{background:#d5d5d5}
- #result{font-weight:bold;font-size:1.15rem;margin-top:1rem;color:#046604}
+ #result{font-weight:bold;font-size:1.15rem;margin-top:1rem;color:#056b05}
 </style>
 </head>
 <body>
 
 <h1>Vedant & Zeno Chemistry Substance Identifier</h1>
 
-<h2>Flow-chart</h2>
+<h2>Flow-chart </h2>
 <pre>
 START
 │
 ├── Soluble in water (clear solution)? ──► YES
 │   │
 │   ├── Flame-test colour
-│   │   ├── Scarlet-red →  Lithium chloride
-│   │   ├── Lilac / purple →  Potassium chloride
-│   │   ├── Pale green →  Boric acid
+│   │   ├── Scarlet-red  → Lithium chloride
+│   │   ├── Lilac / purple  → Potassium chloride
+│   │   ├── Pale green  → Boric acid
 │   │   └── Orange / yellow or none  → continue
 │   │
-│   ├── Benedict’s test gives orange ppt? ──► YES
-│   │   ├── pH ≈ 5 →  Glucose
-│   │   └── pH ≈ 7 →  Sucrose
+│   ├── Benedict’s test **with HCl** gives orange ppt? ──► YES
+│   │   ├── Benedict’s test **without HCl** gives orange/red ppt? ──► YES → Glucose
+│   │                                                             └── NO  → Sucrose
+│   │   
 │   │
-│   └── NO (Benedict negative)
+│   └── NO (Benedict-with-HCl negative)
 │       ├── Add NaOH
-│       │   ├── White ppt & orange-red flame earlier → Calcium nitrate
-│       │   ├── White ppt but no flame → Magnesium sulfate
-│       │   ├── Pungent NH₃ smell → Ammonium chloride
-│       │   └── No precipitate → continue
+│       │   ├── White ppt & earlier orange-red flame  → Calcium nitrate
+│       │   ├── White ppt but no flame colour         → Magnesium sulfate
+│       │   ├── Pungent NH₃ smell / vapour            → Ammonium chloride
+│       │   └── No ppt                                → continue
 │       │
-│       ├── Add dilute HCl
-│       │   ├── Vigorous fizz + warm beaker → Sodium carbonate
-│       │   ├── Moderate fizz, little temp change → Sodium bicarbonate
-│       │   └── No fizz → continue
+│       ├── Measure pH of solution
+│       │   ├── Strongly basic (pH > 10)  → Sodium carbonate
+│       │   ├── Moderately basic (pH ≈ 8 – 9)  → Sodium bicarbonate
+│       │   └── Neutral / ≤ 8  → continue
 │       │
-│       └── While dissolving, feel beaker
-│           ├── Noticeable cooling (endothermic) → Sodium acetate
-│           └── No temperature change → Sodium chloride
+│       └── Add dilute HCl
+│           ├── Vinegar (acetic acid) smell → Sodium acetate
+│           └── No smell                    → Sodium chloride
 │
 └── NO (insoluble / cloudy)
     │
@@ -60,98 +60,112 @@ START
 </pre>
 
 <div class="card">
- <h2>Tester</h2>
- <p id="prompt"></p>
- <div id="buttons"></div>
- <p id="result"></p>
+  <h2>Interactive Tester</h2>
+  <p id="prompt"></p>
+  <div id="buttons"></div>
+  <p id="result"></p>
 </div>
 
 <script>
-// -------------------- decision tree data ------------------------------
+// ---------- Decision-tree data (matches the flow-chart above) ----------
 const tree = {
- q:"Is the substance soluble in water (clear solution)?",
- o:[
-  {l:"Yes", n:{
-    q:"What flame-test colour do you observe?",
-    o:[
-      {l:"Scarlet-red", r:"Lithium chloride"},
-      {l:"Lilac / purple", r:"Potassium chloride"},
-      {l:"Pale green", r:"Boric acid"},
-      {l:"Orange / yellow or none", n:{
-        q:"Does Benedict’s test give an orange-brown precipitate?",
-        o:[
-          {l:"Yes", n:{
-             q:"What is the approximate solution pH?",
-             o:[
-               {l:"Acidic (~5)", r:"Glucose"},
-               {l:"Neutral (~7)", r:"Sucrose"}
-             ]}},
-          {l:"No", n:{
-             q:"After adding NaOH, what happens?",
-             o:[
-               {l:"White ppt & orange-red flame earlier", r:"Calcium nitrate"},
-               {l:"White ppt but no flame colour", r:"Magnesium sulfate"},
-               {l:"Pungent ammonia smell / vapour", r:"Ammonium chloride"},
-               {l:"No precipitate", n:{
-                  q:"After adding dilute HCl, what happens?",
-                  o:[
-                    {l:"Vigorous fizz + warm beaker", r:"Sodium carbonate"},
-                    {l:"Moderate fizz, little temperature change", r:"Sodium bicarbonate"},
-                    {l:"No fizz", n:{
-                       q:"When the solid dissolves, do you feel noticeable cooling?",
-                       o:[
-                         {l:"Yes", r:"Sodium acetate"},
-                         {l:"No", r:"Sodium chloride"}
-                       ]}}
-                  ]}}
-             ]}}
-        ]}}
-    ]}},
-  {l:"No", n:{
-    q:"Does it effervesce when dilute HCl is added?",
-    o:[
-      {l:"Yes", r:"Calcium carbonate"},
-      {l:"No", n:{
-         q:"Does Lugol’s iodine test turn blue-black?",
-         o:[
-           {l:"Yes", r:"Cornstarch"},
-           {l:"No",  r:"Calcium sulfate"}
-         ]}}
-    ]}}
- ]
+  q: "Is the substance soluble in water (clear solution)?",
+  o: [
+    { l: "Yes", n: {   // Soluble branch
+        q: "What flame-test colour do you observe?",
+        o: [
+          { l: "Scarlet-red",   r: "Lithium chloride" },
+          { l: "Lilac / purple", r: "Potassium chloride" },
+          { l: "Pale green",    r: "Boric acid" },
+          { l: "Orange / yellow or none", n: {
+              q: "Does Benedict’s test WITH dilute HCl give an orange precipitate?",
+              o: [
+                { l: "Yes", n: {
+                    q: "Does Benedict’s test WITHOUT HCl give an orange/red precipitate?",
+                    o: [
+                      { l: "Yes", r: "Glucose" },
+                      { l: "No",  r: "Sucrose" }
+                    ]
+                }},
+                { l: "No", n: {   // Benedict-with-HCl negative
+                    q: "After adding NaOH, what happens?",
+                    o: [
+                      { l: "White ppt AND earlier orange-red flame", r: "Calcium nitrate" },
+                      { l: "White ppt but no flame colour",         r: "Magnesium sulfate" },
+                      { l: "Pungent ammonia smell / vapour",        r: "Ammonium chloride" },
+                      { l: "No precipitate", n: {
+                          q: "What is the pH of the solution?",
+                          o: [
+                            { l: "Strongly basic (pH > 10)",       r: "Sodium carbonate" },
+                            { l: "Moderately basic (pH ≈ 8-9)",    r: "Sodium bicarbonate" },
+                            { l: "Neutral / ≤ 8", n: {
+                                q: "After adding dilute HCl, do you smell vinegar (acetic acid)?",
+                                o: [
+                                  { l: "Yes", r: "Sodium acetate" },
+                                  { l: "No",  r: "Sodium chloride" }
+                                ]
+                            }}
+                          ]
+                      }}
+                    ]
+                }}
+              ]
+          }}
+        ]
+    }},
+    { l: "No", n: {   // Insoluble branch
+        q: "Does it effervesce when dilute HCl is added?",
+        o: [
+          { l: "Yes", r: "Calcium carbonate" },
+          { l: "No", n: {
+              q: "Does Lugol’s iodine turn blue-black?",
+              o: [
+                { l: "Yes", r: "Cornstarch" },
+                { l: "No",  r: "Calcium sulfate" }
+              ]
+          }}
+        ]
+    }}
+  ]
 };
-// -------------------- rendering logic ----------------------------------
-const promptEl = document.getElementById("prompt"),
+// ----------------------------------------------------------------------
+
+const promptEl  = document.getElementById("prompt"),
       buttonsEl = document.getElementById("buttons"),
       resultEl  = document.getElementById("result");
-let node = tree;
 
-function show(){
+let node = tree;        // current position in the tree
+
+function render() {
   promptEl.textContent = node.q || "";
-  buttonsEl.innerHTML = "";
-  (node.o||[]).forEach(opt=>{
-    const b=document.createElement("button");
-    b.className="btn"; b.textContent=opt.l;
-    b.onclick=()=>choose(opt);
+  buttonsEl.innerHTML  = "";
+  (node.o || []).forEach(opt => {
+    const b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = opt.l;
+    b.onclick = () => choose(opt);
     buttonsEl.appendChild(b);
   });
 }
 
-function choose(opt){
-  if(opt.r){
+function choose(opt) {
+  if (opt.r) {          // reached a result leaf
     promptEl.textContent = "Identified substance:";
-    buttonsEl.innerHTML = "";
+    buttonsEl.innerHTML  = "";
     resultEl.textContent = opt.r;
-    const again=document.createElement("button");
-    again.className="btn"; again.textContent="Start Over";
-    again.onclick=()=>{node=tree;resultEl.textContent="";show();};
-    buttonsEl.appendChild(again);
-  }else if(opt.n){
+
+    const restart = document.createElement("button");
+    restart.className = "btn";
+    restart.textContent = "Start Over";
+    restart.onclick = () => { node = tree; resultEl.textContent = ""; render(); };
+    buttonsEl.appendChild(restart);
+  } else if (opt.n) {   // go to next question
     node = opt.n;
-    show();
+    render();
   }
 }
-show();        // initialise tester
+
+render();               // initialise when page loads
 </script>
 
 </body>
